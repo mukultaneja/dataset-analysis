@@ -1,0 +1,35 @@
+.header{height:100px;background-color:black;color:white;}
+body {
+	background-image: url('../images/body-background.jpg');
+	overflow-x: hidden;
+	scroll-behavior: auto
+}
+.header h2 {
+	position: relative;
+    top: 15px;
+    letter-spacing: 5px;
+}
+.filter-lable{
+	position: static;
+    width: 79px;
+    height: 18px;
+}
+select.form-control{
+	width: 230px !important;
+}
+.submit{
+	margin-left: 30px;
+	width: 115px;
+}
+div.loader img {
+	width: 150px;
+	height: 167px;
+	position: relative;
+	top: 50px;
+	left: 197px;
+}
+div.sunburst p.error {
+	position: relative;
+    top: 50px;
+    left: 200px
+}

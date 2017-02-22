@@ -1,1 +1,4 @@
-*.csv#
+.csv
+.ipynb_*
+.sublime-*
+.pyc
