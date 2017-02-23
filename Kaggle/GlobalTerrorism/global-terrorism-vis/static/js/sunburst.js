@@ -12,8 +12,6 @@ function createSunburst(root) {
 
 	var color = d3.scale.category20c();
 
-	d3.select("div.sunburst svg").remove();
-	d3.select('div.sunburst p').remove();
 	d3.select('div.sunburst div.loader').style('display', 'block');
 
 	var svg = d3.select("div.sunburst").append("svg")
@@ -25,7 +23,7 @@ function createSunburst(root) {
 	var partition = d3.layout.partition()
 		.sort(d3.ascending)
 		.value(function(d) {
-			return d.success;
+			return d.success > 0 ? d.success : 1;
 		});
 
 	var arc = d3.svg.arc()
@@ -61,7 +59,7 @@ function createSunburst(root) {
 		.each(stash);
 	path.append("svg:title")
 		.text(function(d, i) {
-			return d.name;
+			return d.name + ' ' + d.success;
 		});
 
 

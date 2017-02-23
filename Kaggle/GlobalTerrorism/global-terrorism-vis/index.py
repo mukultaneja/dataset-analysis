@@ -49,7 +49,7 @@ class FilteredData(tornado.web.RequestHandler):
         '''
         Function which handles get request for data handler.
         '''
-        args = self.request_handler()
+        args = self.args_handler()
         data = custom_handlers.get_filtered_data(args)
         if len(data) > 0:
             self.write(data.to_json(orient='records'))
@@ -62,7 +62,7 @@ class FilteredData(tornado.web.RequestHandler):
         '''
         pass
 
-    def request_handler(self):
+    def args_handler(self):
         '''
             Function to handle request and return parameters
             passed through requests
@@ -72,6 +72,7 @@ class FilteredData(tornado.web.RequestHandler):
         args['month'] = self.get_argument('month', 'all')
         args['country'] = self.get_argument('country', 'all')
         args['region'] = self.get_argument('region', 'all')
+        args['city'] = self.get_argument('city', 'all')
         return args
 
 
@@ -84,14 +85,22 @@ class OptionHandler(tornado.web.RequestHandler):
         '''
         Function :
         '''
-        col = self.request_handler()
+        col = self.args_handler()
+
         if col == 'year':
             data = custom_handlers.get_unique_years()
-        elif col == 'country':
-            data = custom_handlers.get_unique_country()
         elif col == 'region':
+            data = custom_handlers.get_unique_regions()
+        elif col == 'country':
+            region = self.get_argument('region')
+            region = region.replace('|', '&')
+            data = custom_handlers.get_unique_countries(region)
+        else:
+            region = self.get_argument('region')
+            region = region.replace('|', '&')
             country = self.get_argument('country')
-            data = custom_handlers.get_unique_region(country)
+            data = custom_handlers.get_unique_cities(region, country)
+
         data = json.dumps(data)
         self.write(data)
 
@@ -101,7 +110,7 @@ class OptionHandler(tornado.web.RequestHandler):
         '''
         pass
 
-    def request_handler(self):
+    def args_handler(self):
         '''
         Function:
         '''

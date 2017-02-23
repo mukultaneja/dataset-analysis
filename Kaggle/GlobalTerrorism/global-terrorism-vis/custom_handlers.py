@@ -23,34 +23,48 @@ def get_filtered_data(kwargs):
     if kwargs['month'] != 'all':
         data = data[data['month'] == kwargs['month']]
 
-    if kwargs['country'] != 'all':
-        data = data[data['country_txt'] == kwargs['country']]
-        cols.append('country_txt')
-
     if kwargs['region'] != 'all':
         data = data[data['region_txt'] == kwargs['region']]
         cols.append('region_txt')
 
-    return data.groupby(cols, as_index=False).sum()
+    if kwargs['country'] != 'all':
+        data = data[data['country_txt'] == kwargs['country']]
+        cols.append('country_txt')
+
+    if kwargs['city'] != 'all':
+        data = data[data['city'] == kwargs['city']]
+        cols.append('city')
+
+    return data.groupby(cols, as_index=False).sum().fillna('NA')
 
 
 def get_unique_years():
     '''
     Function:
     '''
-    return TERRORISM_DATA['year'].unique().tolist()
+    return TERRORISM_DATA['year'].fillna('NA').unique().tolist()
 
 
-def get_unique_country():
+def get_unique_regions():
     '''
     Function:
     '''
-    return TERRORISM_DATA['country_txt'].unique().tolist()
+    return TERRORISM_DATA['region_txt'].fillna('NA').unique().tolist()
 
 
-def get_unique_region(country):
+def get_unique_countries(region):
     '''
     Function:
     '''
-    data = TERRORISM_DATA[TERRORISM_DATA['country_txt'] == country]
-    return data['region_txt'].unique().tolist()
+    data = TERRORISM_DATA[TERRORISM_DATA['region_txt'] == region]
+    return data['country_txt'].fillna('NA').unique().tolist()
+
+
+def get_unique_cities(region, country):
+    '''
+    Function:
+    '''
+    print region, country
+    data = TERRORISM_DATA[TERRORISM_DATA['region_txt'] == region]
+    data = data[data['country_txt'] == country]
+    return data['city'].fillna('NA').unique().tolist()
