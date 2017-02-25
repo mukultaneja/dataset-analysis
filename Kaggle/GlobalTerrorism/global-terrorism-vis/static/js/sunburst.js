@@ -1,7 +1,6 @@
-
-function createSunburst(root) {
+function drawSunburst(root) {
 	var width = 960,
-		height = 500,
+		height = 600,
 		radius = Math.min(width, height) / 2;
 
 	var x = d3.scale.linear()
@@ -12,13 +11,11 @@ function createSunburst(root) {
 
 	var color = d3.scale.category20c();
 
-	d3.select('div.sunburst div.loader').style('display', 'block');
-
 	var svg = d3.select("div.sunburst").append("svg")
 		.attr("width", width)
 		.attr("height", height)
 		.append("g")
-		.attr("transform", "translate(" + width / 3 + "," + (height / 2 + 10) + ")");
+		.attr("transform", "translate(" + 650 + "," + (height / 2) + ")");
 
 	var partition = d3.layout.partition()
 		.sort(d3.ascending)
@@ -57,7 +54,8 @@ function createSunburst(root) {
 		.style('stroke', 'white')
 		.on("click", click)
 		.each(stash);
-	path.append("svg:title")
+
+	path.append("title")
 		.text(function(d, i) {
 			return d.name + ' ' + d.success;
 		});
@@ -78,32 +76,6 @@ function createSunburst(root) {
 	function stash(d) {
 		d.x0 = d.x;
 		d.dx0 = d.dx;
-	}
-
-	// When switching data: interpolate the arcs in data space.
-	function arcTweenData(a, i) {
-		var oi = d3.interpolate({
-			x: a.x0,
-			dx: a.dx0
-		}, a);
-
-		function tween(t) {
-			var b = oi(t);
-			a.x0 = b.x;
-			a.dx0 = b.dx;
-			return arc(b);
-		}
-		if (i == 0) {
-			// If we are on the first arc, adjust the x domain to match the root node
-			// at the current zoom level. (We only need to do this once.)
-			var xd = d3.interpolate(x.domain(), [node.x, node.x + node.dx]);
-			return function(t) {
-				x.domain(xd(t));
-				return tween(t);
-			};
-		} else {
-			return tween;
-		}
 	}
 
 	// When zooming: interpolate the scales.

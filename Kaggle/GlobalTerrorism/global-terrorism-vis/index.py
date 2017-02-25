@@ -13,15 +13,6 @@ import custom_handlers
 define('port', default=8888, help="describes on which port server is running")
 
 
-def get_page_handlers():
-    '''
-        Function combines all the page handlers and retunred
-        whenever requires
-    '''
-    return [(r'/', IndexHandler), (r'/data', FilteredData),
-            (r'/options', OptionHandler)]
-
-
 class IndexHandler(tornado.web.RequestHandler):
     '''
     Pass
@@ -85,24 +76,9 @@ class OptionHandler(tornado.web.RequestHandler):
         '''
         Function :
         '''
-        col = self.args_handler()
-
-        if col == 'year':
-            data = custom_handlers.get_unique_years()
-        elif col == 'region':
-            data = custom_handlers.get_unique_regions()
-        elif col == 'country':
-            region = self.get_argument('region')
-            region = region.replace('|', '&')
-            data = custom_handlers.get_unique_countries(region)
-        else:
-            region = self.get_argument('region')
-            region = region.replace('|', '&')
-            country = self.get_argument('country')
-            data = custom_handlers.get_unique_cities(region, country)
-
-        data = json.dumps(data)
-        self.write(data)
+        col, region, country = self.args_handler()
+        data = custom_handlers.get_options(col, region, country)
+        return self.write(data)
 
     def data_received(self, message):
         '''
@@ -115,7 +91,9 @@ class OptionHandler(tornado.web.RequestHandler):
         Function:
         '''
         col = self.get_argument('col')
-        return col
+        region = self.get_argument('region', None)
+        country = self.get_argument('country', None)
+        return col, region, country
 
 
 if __name__ == '__main__':
@@ -125,8 +103,12 @@ if __name__ == '__main__':
         if os.path.isfile(f):
             tornado.autoreload.watch(f)
 
+    HANDLERS = [(r'/', IndexHandler),
+                (r'/data', FilteredData),
+                (r'/options', OptionHandler)]
+
     APP = tornado.web.Application(
-        handlers=get_page_handlers(),
+        handlers=HANDLERS,
         template_path=os.path.join(os.path.dirname('__FILE__')),
         static_path=os.path.join(os.path.dirname('__FILE__'), 'static'),
         autoreload=True)

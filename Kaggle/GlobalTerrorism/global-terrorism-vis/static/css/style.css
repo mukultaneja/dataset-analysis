@@ -1,4 +1,4 @@
-.header{height:100px;background-color:black;color:white;}
+.header{height:60px;background-color:black;color:white;}
 body {
 	background-image: url('../images/body-background.jpg');
 	overflow-x: hidden;
@@ -6,7 +6,7 @@ body {
 }
 .header h2 {
 	position: relative;
-    top: 15px;
+    top: 0px;
     letter-spacing: 5px;
 }
 .filter-lable{
@@ -26,7 +26,7 @@ div.loader img {
 	height: 167px;
 	position: relative;
 	top: 50px;
-	left: 197px;
+	left: 573px;
 }
 div.sunburst p.error {
 	position: relative;
