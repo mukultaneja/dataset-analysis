@@ -2,20 +2,23 @@
 body {
 	background-image: url('../images/body-background.jpg');
 	overflow-x: hidden;
-	scroll-behavior: auto
+	scroll-behavior: auto;
+	font-size: 13px;
 }
 .header h2 {
 	position: relative;
     top: 0px;
     letter-spacing: 5px;
+    font-size: 24px;
 }
 .filter-lable{
 	position: static;
     width: 79px;
-    height: 18px;
+    height: 16px;
 }
 select.form-control{
 	width: 180px !important;
+	font-size: 13px;
 }
 .submit{
 	margin-left: 30px;
@@ -32,4 +35,40 @@ div.sunburst p.error {
 	position: relative;
     top: 50px;
     left: 200px
+}
+div.filter-div{
+	height: 70px;
+	background-color: inherit;
+}
+div.filter-row{
+	padding-top: 22px;
+}
+a.filter-link{
+	position: relative;
+    top: 32px;
+    color: white;
+    font-size: 15px;
+    left: 84px;
+    letter-spacing: 1px;
+    text-decoration: none;
+}
+div.component-parent{
+	position: relative;
+    bottom: 0px
+}
+div.breadcumb {
+	font-size: 14px;
+    letter-spacing: 1px;
+    text-decoration: none;
+    position: relative;
+    left: 24px;
+}
+div.breadcumb-parent {
+	height: 45px;
+    position: relative;
+    top: 8px;
+    right: 32px
+}
+a:focus, a:hover {
+	text-decoration: none !important;
 }

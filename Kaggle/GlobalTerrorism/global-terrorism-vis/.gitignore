@@ -2,3 +2,4 @@
 *.ipynb_*
 *.sublime-*
 *.pyc
+bower_components/

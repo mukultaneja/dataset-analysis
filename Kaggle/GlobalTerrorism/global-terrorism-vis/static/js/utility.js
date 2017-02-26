@@ -68,6 +68,7 @@ function Utility() {
 				response = JSON.parse(response);
 				if (response.hasOwnProperty('error')) {
 					$('div.sunburst').append('<p class="error">' + response['error'] + '</p>');
+					d3.select('div.sunburst div.loader').style('display', 'none');
 				} else {
 					var results = d3.nest()
 						.key(function(d) {
@@ -93,7 +94,7 @@ function Utility() {
 						.entries(response);
 
 					results = {
-						'key': 'root',
+						'key': '',
 						'values': results
 					};
 					results = {
@@ -129,6 +130,13 @@ function Utility() {
 				}
 			}
 		});
-		d3.select('div.sunburst div.loader').style('display', 'none');
+	}
+
+	this.addBreadCumb = function(values){
+		var index = 0;
+		$('div.breadcumb a').remove();
+		for (;index < 4; index++){
+			$('div.breadcumb').append('<a href="#" class="breadcumb-links"> ' + values[index] + " ></a>");
+		}
 	}
 }

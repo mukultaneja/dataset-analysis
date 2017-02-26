@@ -1,3 +1,4 @@
+
 function drawSunburst(root) {
 	var width = 960,
 		height = 600,
@@ -9,18 +10,28 @@ function drawSunburst(root) {
 	var y = d3.scale.sqrt()
 		.range([0, radius]);
 
-	var color = d3.scale.category20c();
+	var color = d3.scale.ordinal()
+					.range(['#BED072', '#8FAD50', '#EFE08E', '#E1685F', '#E9AE7B'])
+
+	var tip = d3.tip()
+				.attr('class', 'd3-tip')
+				.offset([-10, 0])
+				.html(function(d){
+					return "<strong> Value : " + d.value + '</strong>';
+				});
 
 	var svg = d3.select("div.sunburst").append("svg")
 		.attr("width", width)
 		.attr("height", height)
 		.append("g")
-		.attr("transform", "translate(" + 650 + "," + (height / 2) + ")");
+		.attr("transform", "translate(" + 300 + "," + (height / 2) + ")");
+
+	svg.call(tip);
 
 	var partition = d3.layout.partition()
 		.sort(d3.ascending)
 		.value(function(d) {
-			return d.success > 0 ? d.success : 1;
+			return d.value > 0 ? d.value : 1;
 		});
 
 	var arc = d3.svg.arc()
@@ -48,7 +59,7 @@ function drawSunburst(root) {
 		.append("path")
 		.attr("d", arc)
 		.style("fill", function(d) {
-			return color((d.children ? d : d.parent).name);
+			return color((d.children ? d : d.parent).value);
 		})
 		.style('stroke-width', 1)
 		.style('stroke', 'white')
@@ -57,9 +68,10 @@ function drawSunburst(root) {
 
 	path.append("title")
 		.text(function(d, i) {
-			return d.name + ' ' + d.success;
+			return d.name + ' ' + d.value;
 		});
 
+	// path.call(tip);
 
 	function click(d) {
 		node = d;

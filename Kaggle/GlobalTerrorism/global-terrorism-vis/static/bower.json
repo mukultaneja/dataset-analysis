@@ -1,0 +1,23 @@
+{
+  "name": "global-terrorism-vis",
+  "homepage": "https://github.com/mukultaneja/dataset-analysis",
+  "authors": [
+    "mukultaneja <mukul.taneja@gramener.com>"
+  ],
+  "description": "visuals to represent terrorism in world for specific years",
+  "main": "index.html",
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "d3": "3.5",
+    "jquery": "^3.1.1",
+    "bootstrap": "^3.3.7",
+    "d3-tip": "^0.7.1"
+  }
+}
