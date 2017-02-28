@@ -14,52 +14,28 @@ define('port', default=8888, help="describes on which port server is running")
 
 
 class IndexHandler(tornado.web.RequestHandler):
-    '''
-    Pass
-    '''
-
     def get(self):
-        '''
-        Function which handles get request for index page.
-        '''
         self.render('index.html')
 
     def data_received(self, message):
-        '''
-        Overridden data_received function
-        '''
         pass
 
 
-class FilteredData(tornado.web.RequestHandler):
-    '''
-    Pass
-    '''
-
+class SunburstHandler(tornado.web.RequestHandler):
     def get(self):
-        '''
-        Function which handles get request for data handler.
-        '''
         args = self.args_handler()
-        data = custom_handlers.get_filtered_data(args)
+        data = custom_handlers.get_sunburst_data(args)
         if len(data) > 0:
             self.write(data.to_json(orient='records'))
         else:
             self.write(json.dumps({'error': 'No Data is Available'}))
 
     def data_received(self, message):
-        '''
-            Overridden data_received function
-        '''
         pass
 
     def args_handler(self):
-        '''
-            Function to handle request and return parameters
-            passed through requests
-        '''
         args = dict()
-        args['year'] = self.get_argument('year', '1970-1979')
+        args['year'] = self.get_argument('year', '2000-2009')
         args['month'] = self.get_argument('month', 'all')
         args['country'] = self.get_argument('country', 'all')
         args['region'] = self.get_argument('region', 'all')
@@ -67,29 +43,62 @@ class FilteredData(tornado.web.RequestHandler):
         return args
 
 
-class OptionHandler(tornado.web.RequestHandler):
-    '''
-    Class:
-    '''
-
+class TrendLineHandler(tornado.web.RequestHandler):
     def get(self):
-        '''
-        Function :
-        '''
+        args = self.args_handler()
+        data = custom_handlers.get_trend_line_data(args)
+        if len(data) > 0:
+            self.write(data.to_json(orient='records'))
+        else:
+            self.write(json.dumps({'error': 'No Data is Available'}))
+
+    def data_received(self, message):
+        pass
+
+    def args_handler(self):
+        args = dict()
+        args['year'] = self.get_argument('year', '2000-2009')
+        args['month'] = self.get_argument('month', 'all')
+        args['region'] = self.get_argument('region', 'Sub-Saharan Africa')
+        args['country'] = self.get_argument('country', 'all')
+        args['city'] = self.get_argument('city', 'all')
+        args['check'] = self.get_argument('checktype', 'success')
+        return args
+
+
+class SunburstTrendLineHandler(tornado.web.RequestHandler):
+    def get(self):
+        args = self.args_handler()
+        data = custom_handlers.get_sunburst_trendline_data(args)
+        if len(data) > 0:
+            self.write(data.to_json(orient='records'))
+        else:
+            self.write(json.dumps({'error': 'No Data is Available'}))
+
+    def data_received(self, message):
+        pass
+
+    def args_handler(self):
+        args = dict()
+        args['year'] = self.get_argument('year', None)
+        args['month'] = self.get_argument('month', None)
+        args['region'] = self.get_argument('region', None)
+        args['country'] = self.get_argument('country', None)
+        args['city'] = self.get_argument('city', None)
+        args['check'] = self.get_argument('checktype', 'success')
+        return args
+
+
+class OptionHandler(tornado.web.RequestHandler):
+    def get(self):
         col, region, country = self.args_handler()
         data = custom_handlers.get_options(col, region, country)
         return self.write(data)
 
     def data_received(self, message):
-        '''
-            Overridden data_received function
-        '''
         pass
 
     def args_handler(self):
-        '''
-        Function:
-        '''
         col = self.get_argument('col')
         region = self.get_argument('region', None)
         country = self.get_argument('country', None)
@@ -104,7 +113,9 @@ if __name__ == '__main__':
             tornado.autoreload.watch(f)
 
     HANDLERS = [(r'/', IndexHandler),
-                (r'/data', FilteredData),
+                (r'/sunburst', SunburstHandler),
+                (r'/trend-line', TrendLineHandler),
+                (r'/sunburst-trend-line', SunburstTrendLineHandler),
                 (r'/options', OptionHandler)]
 
     APP = tornado.web.Application(

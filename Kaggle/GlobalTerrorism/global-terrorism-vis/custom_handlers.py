@@ -1,5 +1,6 @@
 import json
 import pandas as pd
+import numpy as np
 
 try:
     TERRORISM_DATA = pd.read_csv('global-terror-data.csv', index_col=0)
@@ -9,7 +10,7 @@ except Exception as error:
     print error.__str__()
 
 
-def get_filtered_data(kwargs):
+def get_sunburst_data(kwargs):
     '''
     Function to compute data by year
     '''
@@ -35,6 +36,70 @@ def get_filtered_data(kwargs):
         data = data[data['city'] == kwargs['city']]
 
     return data.groupby(cols, as_index=False).sum().fillna('NA')
+
+
+def get_trend_line_data(kwargs):
+    '''
+    Function:
+    '''
+    data = TERRORISM_DATA
+    years = kwargs['year'].split('-')
+    st_year = int(years[0])
+    en_year = int(years[1])
+    cols = ['iyear', 'region_txt']
+    data = data[(data['iyear'] >= st_year) & (data['iyear'] <= en_year)]
+    data = data[data['region_txt'] == kwargs['region']]
+
+    if kwargs['country'] != 'all':
+        data = data[data['country_txt'] == kwargs['country']]
+        cols.append('country_txt')
+
+    if kwargs['city'] != 'all':
+        data = data[data['city'] == kwargs['city']]
+        cols.append('city')
+
+    if kwargs['check'] == 'suicide':
+        return data.groupby(cols, as_index=False).agg({'suicide': np.sum})
+
+    return data.groupby(cols, as_index=False).agg({'success': np.sum})
+
+
+def get_sunburst_trendline_data(kwargs):
+    '''
+    Function:
+    '''
+    data = TERRORISM_DATA
+    year = int(kwargs['year'])
+    month = kwargs['month']
+    region = kwargs['region']
+    country = kwargs['country']
+    checktype = kwargs['check']
+
+    cols = []
+
+    if year and month and region and country:
+        data = data[data['iyear'] == year]
+        data = data[data['month'] == month]
+        data = data[data['region_txt'] == region]
+        data = data[data['country_txt'] == country]
+        cols.append('city')
+    elif year and month and region:
+        data = data[data['iyear'] == year]
+        data = data[data['month'] == month]
+        data = data[data['region_txt'] == region]
+        cols.append('country_txt')
+    elif year and month:
+        data = data[data['iyear'] == year]
+        data = data[data['month'] == month]
+        cols.append('region_txt')
+    else:
+        data = data[data['iyear'] == year]
+        cols.append('month')
+
+    if checktype == 'suicide':
+        return data.groupby(cols, as_index=False).agg({'suicide': np.sum})
+
+    return data.groupby(cols, as_index=False).agg({'success': np.sum})
 
 
 def get_options(col, region, country):
@@ -84,3 +149,4 @@ def get_unique_cities(region, country):
     data = TERRORISM_DATA[TERRORISM_DATA['region_txt'] == region]
     data = data[data['country_txt'] == country]
     return data['city'].fillna('NA').unique().tolist()
+

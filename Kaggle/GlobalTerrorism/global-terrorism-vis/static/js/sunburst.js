@@ -1,8 +1,21 @@
 
+function getColor(range) {
+  if (range < 200){
+  	return '#238443';
+  }else if (range > 200 && range < 500){
+  	return '#DDE689';
+  }else if (range > 500 && range < 800){
+  	return '#EC7014';
+  }else{
+  	return '#D73027';
+  }
+}
+
 function drawSunburst(root) {
-	var width = 960,
-		height = 600,
-		radius = Math.min(width, height) / 2;
+	var width = 660,
+		height = 480,
+		radius = Math.min(width, height) / 2,
+		utility = new Utility();
 
 	var x = d3.scale.linear()
 		.range([0, 2 * Math.PI]);
@@ -11,20 +24,50 @@ function drawSunburst(root) {
 		.range([0, radius]);
 
 	var color = d3.scale.ordinal()
-					.range(['#BED072', '#8FAD50', '#EFE08E', '#E1685F', '#E9AE7B'])
+		.domain([0, root.success])
+		.range(['#C3D476', '#E36E62'])
 
 	var tip = d3.tip()
-				.attr('class', 'd3-tip')
-				.offset([-10, 0])
-				.html(function(d){
-					return "<strong> Value : " + d.value + '</strong>';
-				});
+		.attr('class', 'd3-tip')
+		.offset([-10, 0])
+		.html(function(d) {
+			switch (d.depth) {
+				case 0:
+					return '<strong>root</strong>';
+				case 1:
+					return '<strong> Year : ' + d.name +
+						'<br /> Total Place(s) : ' + d.value + '</strong>' +
+						'<br /> Attacks Successesful : ' + d.success;
+				case 2:
+					return '<strong> Month : ' + d.name + '<br /> Total Place(s) : ' + d.value +
+						'<br /> Attacks Successesful : ' +
+						d.success;
+					'</strong>';
+				case 3:
+					return '<strong> Region : ' + d.name + '<br /> Total Place(s) : ' + d.value +
+						'<br /> Attacks Successesful : ' +
+						d.success;
+					'</strong>';
+				case 4:
+					return '<strong> Country : ' + d.name + '<br /> Total Place(s) : ' + d.value +
+						'<br /> Attacks Successesful : ' +
+						d.success;
+					'</strong>';
+				case 5:
+					return '<strong> City : ' +
+						d.name +
+						'<br /> Total Place(s) : ' + d.value +
+						'<br /> Attacks Successesful : ' +
+						d.success;
+					'</strong>';
+			}
+		});
 
 	var svg = d3.select("div.sunburst").append("svg")
-		.attr("width", width)
-		.attr("height", height)
+		.attr('viewBox', '0 0 600 480')
+		.attr('preserveAspectRatio', "xMidYMid meet")
 		.append("g")
-		.attr("transform", "translate(" + 300 + "," + (height / 2) + ")");
+		.attr("transform", "translate(" + 300 + "," + (height / 2) + ")")
 
 	svg.call(tip);
 
@@ -59,25 +102,48 @@ function drawSunburst(root) {
 		.append("path")
 		.attr("d", arc)
 		.style("fill", function(d) {
-			return color((d.children ? d : d.parent).value);
+			return color(d.success);
 		})
 		.style('stroke-width', 1)
 		.style('stroke', 'white')
 		.on("click", click)
-		.each(stash);
-
-	path.append("title")
-		.text(function(d, i) {
-			return d.name + ' ' + d.value;
-		});
-
-	// path.call(tip);
+		.each(stash)
+		.on('mouseover', tip.show)
+		.on('mouseout', tip.hide);
 
 	function click(d) {
 		node = d;
+		var params = {};
+		var paramsKeys = new Array('year', 'month', 'region', 'country', 'city')
+		var rateValue = '';
+		var valueCount = 0;
+		while (node.parent != undefined){
+			params[paramsKeys[node.depth - 1]] = node.name;
+			node = node.parent;
+		}
+
+		// recording suicide / success rate
+		var checktype = $('input[name="rate"]:checked').val();
+		params['checktype'] = checktype;
+
+
+		rateValue += params['year'] + '/' +
+					 params['month'] + '/' + 
+					 params['region'] + '/' +
+					 params['country'] + '/' +
+					 params['city'] + '/' +
+					 'sunburst' + '/' +
+					 paramsKeys[d.children[0].depth - 1];
+
+		$('input[name="rate"]').attr('attr', rateValue);
+
 		path.transition()
 			.duration(1000)
 			.attrTween("d", arcTweenZoom(d));
+
+		setTimeout(function(){
+			utility.getSunburstTrendLineData(params, paramsKeys[d.children[0].depth - 1]);
+		}, 1000);
 	}
 
 	d3.select(self.frameElement).style("height", height + "px");

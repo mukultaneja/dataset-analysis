@@ -60,15 +60,15 @@ function Utility() {
 	}
 
 	this.getSunburstData = function(params) {
+		d3.select('div.sunburst-loader').style('display', 'block');
 		$.ajax({
-			url: '/data',
+			url: '/sunburst',
 			type: 'get',
 			data: params,
 			success: function(response) {
 				response = JSON.parse(response);
 				if (response.hasOwnProperty('error')) {
 					$('div.sunburst').append('<p class="error">' + response['error'] + '</p>');
-					d3.select('div.sunburst div.loader').style('display', 'none');
 				} else {
 					var results = d3.nest()
 						.key(function(d) {
@@ -92,7 +92,6 @@ function Utility() {
 							})
 						})
 						.entries(response);
-
 					results = {
 						'key': '',
 						'values': results
@@ -116,27 +115,103 @@ function Utility() {
 																"name": v.key,
 																"success": v.values
 															}
+														}),
+														"success": d3.sum(city.values, function(v) {
+															return v.values;
 														})
 													}
-												})
+												}),
+												"success": d3.sum(country.values.map(function(city) {
+													return d3.sum(city.values.map(function(v) {
+														return v.values
+													}))
+												}))
 											}
-										})
+										}),
+										"success": d3.sum(region.values.map(function(country) {
+											return d3.sum(country.values.map(function(city) {
+												return d3.sum(city.values.map(function(v) {
+													return v.values
+												}))
+											}))
+										}))
 									}
-								})
+								}),
+								"success": d3.sum(years.values.map(function(region) {
+									return d3.sum(region.values.map(function(country) {
+										return d3.sum(country.values.map(function(city) {
+											return d3.sum(city.values.map(function(v) {
+												return v.values
+											}))
+										}))
+									}))
+								}))
 							}
-						})
+						}),
+						"success": d3.sum(results.values.map(function(years) {
+							return d3.sum(years.values.map(function(region) {
+								return d3.sum(region.values.map(function(country) {
+									return d3.sum(country.values.map(function(city) {
+										return d3.sum(city.values.map(function(v) {
+											return v.values
+										}))
+									}))
+								}))
+							}))
+						}))
 					};
 					drawSunburst(results);
+					d3.select('div.sunburst-loader').style('display', 'none');
 				}
 			}
 		});
 	}
 
-	this.addBreadCumb = function(values){
+	this.addBreadCumb = function(values) {
 		var index = 0;
 		$('div.breadcumb a').remove();
-		for (;index < 4; index++){
+		for (; index < 4; index++) {
 			$('div.breadcumb').append('<a href="#" class="breadcumb-links"> ' + values[index] + " ></a>");
 		}
+	}
+
+	this.getTrendLineData = function(params) {
+		d3.select('div.trend-line-loader').style('display', 'block');
+		$.ajax({
+			url: '/trend-line',
+			type: 'get',
+			data: params,
+			success: function(response) {
+				d3.select("div.trend-line svg").remove();
+				d3.select('div.trend-line p').remove();
+				response = JSON.parse(response);
+				if (response.hasOwnProperty('error')) {
+					$('div.sunburst').append('<p class="error">' + response['error'] + '</p>');
+				} else {
+					drawTrendLine(response, params['checktype']);
+					d3.select('div.trend-line-loader').style('display', 'none');
+				}
+			}
+		})
+	}
+
+	this.getSunburstTrendLineData = function(params, axisName) {
+		d3.select('div.trend-line-loader').style('display', 'block');
+		$.ajax({
+			url: '/sunburst-trend-line',
+			type: 'get',
+			data: params,
+			success: function(response) {
+				d3.select("div.trend-line svg").remove();
+				d3.select('div.trend-line p').remove();
+				response = JSON.parse(response);
+				if (response.hasOwnProperty('error')) {
+					$('div.sunburst').append('<p class="error">' + response['error'] + '</p>');
+				} else {
+					drawTrendLine(response, params['checktype'], axisName);
+					d3.select('div.trend-line-loader').style('display', 'none');
+				}
+			}
+		})
 	}
 }
