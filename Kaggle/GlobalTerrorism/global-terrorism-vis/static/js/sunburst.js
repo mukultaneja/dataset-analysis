@@ -142,7 +142,7 @@ function drawSunburst(root) {
 			.attrTween("d", arcTweenZoom(d));
 
 		setTimeout(function(){
-			utility.getSunburstTrendLineData(params, paramsKeys[d.children[0].depth - 1]);
+			utility.getSunburstBulletChartData(params, paramsKeys[d.children[0].depth - 1]);
 		}, 1000);
 	}
 

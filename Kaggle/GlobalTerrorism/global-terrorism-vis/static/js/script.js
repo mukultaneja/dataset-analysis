@@ -96,8 +96,8 @@ $('document').ready(function() {
 		// removing existing results
 		d3.select("div.sunburst svg").remove();
 		d3.select('div.sunburst p').remove();
-		d3.select("div.trend-line svg").remove();
-		d3.select('div.trend-line p').remove();
+		d3.select("div.bullets svg").remove();
+		d3.select('div.bullets p').remove();
 
 		var year = $('select[name="year"] option:selected').val();
 		var region = $('select[name="region"] option:selected').val();
@@ -122,39 +122,38 @@ $('document').ready(function() {
 		var v = new Array(year, region, country, city);
 		utility.addBreadCumb(v);
 		utility.getSunburstData(params);
-		utility.getTrendLineData(params);
+		utility.getBulletChartData(params);
 	});
 
 	$('input[name=rate]').change(function(e) {
-		var attrs = $(this).attr('attr').split('/');
-		var year = attrs[0];
-		var month = attrs[1]
-		var region = attrs[2];
-		var country = attrs[3];
-		var city = attrs[4];
-		var from = attrs[5];
-		var axisName = attrs[6];
+		// var attrs = $(this).attr('attr').split('/');
+		// var year = attrs[0];
+		// var month = attrs[1]
+		// var region = attrs[2];
+		// var country = attrs[3];
+		// var city = attrs[4];
+		// var from = attrs[5];
+		// var axisName = attrs[6];
+
+		var year = $('select[name="year"] option:selected').val();
+		var region = $('select[name="region"] option:selected').val();
+		var country = $('select[name="country"] option:selected').val();
+		var city = $('select[name="city"] option:selected').val();
 
 		var params = {
 			'year': year,
-			'month': month,
 			'region': region,
 			'country': country,
 			'city': city,
 			'checktype': $(this).val()
 		};
 
-		d3.select("div.trend-line svg").remove();
-		d3.select('div.trend-line p').remove();
-		if (from == 'sunburst')
-			utility.getSunburstTrendLineData(params, axisName);
-		else
-			utility.getTrendLineData(params);
+		utility.getBulletChartData(params);
 
 	});
 
 	utility.getSunburstData(params);
-	utility.getTrendLineData(params);
+	utility.getBulletChartData(params);
 	utility.getUniqueListOfYears();
 	utility.getUniqueListOfRegions();
 });

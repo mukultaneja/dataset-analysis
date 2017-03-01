@@ -64,7 +64,7 @@ def get_trend_line_data(kwargs):
     return data.groupby(cols, as_index=False).agg({'success': np.sum})
 
 
-def get_sunburst_trendline_data(kwargs):
+def get_sunburst_bulletchart_data(kwargs):
     '''
     Function:
     '''
@@ -74,32 +74,58 @@ def get_sunburst_trendline_data(kwargs):
     region = kwargs['region']
     country = kwargs['country']
     checktype = kwargs['check']
-
-    cols = []
+    key = 'iyear'
 
     if year and month and region and country:
         data = data[data['iyear'] == year]
         data = data[data['month'] == month]
         data = data[data['region_txt'] == region]
         data = data[data['country_txt'] == country]
-        cols.append('city')
+        key = 'city'
     elif year and month and region:
         data = data[data['iyear'] == year]
         data = data[data['month'] == month]
         data = data[data['region_txt'] == region]
-        cols.append('country_txt')
+        data = data[data['country_txt'] == country]
+        key = 'country_txt'
     elif year and month:
         data = data[data['iyear'] == year]
         data = data[data['month'] == month]
-        cols.append('region_txt')
+        data = data[data['region_txt'] == region]
+        key = 'region_txt'
     else:
         data = data[data['iyear'] == year]
-        cols.append('month')
+        data = data[data['month'] == month]
+        key = 'month'
 
-    if checktype == 'suicide':
-        return data.groupby(cols, as_index=False).agg({'suicide': np.sum})
+    if checktype == 'success':
+        data = data[[key, 'status', 'success']]
 
-    return data.groupby(cols, as_index=False).agg({'success': np.sum})
+        data = pd.pivot_table(data, index=[key],
+                              columns=['status'],
+                              aggfunc=np.size).fillna(0)
+
+        data['total'] = data['success']['successful'] + \
+            data['success']['unsuccessful']
+
+        data = pd.DataFrame([data.success.successful,
+                             data.total]).transpose().reset_index()
+    else:
+        data = data[[key, 'suicidestatus', 'suicide']]
+
+        data = pd.pivot_table(data, index=[key],
+                              columns=['suicidestatus'],
+                              aggfunc=np.size).fillna(0)
+
+        data['total'] = data['suicide'][
+            'suicide'] + data['suicide']['nosuicide']
+
+        data = pd.DataFrame([data.suicide.suicide,
+                             data.total]).transpose().reset_index()
+
+    data.columns = ['iyear', 'measure', 'total']
+
+    return data
 
 
 def get_options(col, region, country):
@@ -150,3 +176,65 @@ def get_unique_cities(region, country):
     data = data[data['country_txt'] == country]
     return data['city'].fillna('NA').unique().tolist()
 
+
+def get_tree_map_data(kwargs):
+    '''
+    Function:
+    '''
+    year = int(kwargs['year'])
+    data = TERRORISM_DATA[TERRORISM_DATA['iyear'] == year]
+    data = TERRORISM_DATA
+    return pd.pivot_table(data, index=['iyear'],
+                          columns=[kwargs['col']],
+                          values=['success', 'suicide'],
+                          aggfunc=np.sum)
+
+
+def get_bullet_chart_data(kwargs):
+    '''
+    Function:
+    '''
+    data = TERRORISM_DATA
+    years = kwargs['year'].split('-')
+    st_year = int(years[0])
+    en_year = int(years[1])
+
+    data = data[(data['iyear'] >= st_year) & (data['iyear'] <= en_year)]
+    data = data[data['region_txt'] == kwargs['region']]
+
+    if kwargs['country'] != 'all':
+        data = data[data['country_txt'] == kwargs['country']]
+
+    if kwargs['city'] != 'all':
+        data = data[data['city'] == kwargs['city']]
+
+    data = data[(data['iyear'] >= st_year) & (data['iyear'] <= en_year)]
+
+    if kwargs['check'] == 'success':
+        data = data[['iyear', 'status', 'success']]
+
+        data = pd.pivot_table(data, index=['iyear'],
+                              columns=['status'],
+                              aggfunc=np.size).fillna(0)
+
+        data['total'] = data['success']['successful'] + \
+            data['success']['unsuccessful']
+
+        data = pd.DataFrame([data.success.successful,
+                             data.total]).transpose().reset_index()
+    else:
+        data = data[['iyear', 'suicidestatus', 'suicide']]
+
+        data = pd.pivot_table(data, index=['iyear'],
+                              columns=['suicidestatus'],
+                              aggfunc=np.size).fillna(0)
+
+        data['total'] = data['suicide'][
+            'suicide'] + data['suicide']['nosuicide']
+
+        data = pd.DataFrame([data.suicide.suicide,
+                             data.total]).transpose().reset_index()
+
+    data.columns = ['iyear', 'measure', 'total']
+
+    return data

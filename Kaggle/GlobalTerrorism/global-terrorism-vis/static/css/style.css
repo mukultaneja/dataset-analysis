@@ -4,7 +4,7 @@ body{background-image:url('../images/body-background.jpg');overflow-x:hidden;scr
 .filter-lable{position:static;width:79px;height:16px;}
 select.form-control{width:180px!important;font-size:13px;}
 .submit{margin-left:30px;width:115px;}
-div.trend-line-loader img{width:128px;height:138px;position:relative;top:31px;left:255px}
+div.bullet-loader img{width:128px;height:138px;position:relative;top:31px;left:255px}
 div.sunburst-loader img{width:128px;height:138px;position:relative;top:50px;left:251px}
 div.sunburst p.error{position:relative;top:50px;left:200px}
 div.filter-div{height:70px;}

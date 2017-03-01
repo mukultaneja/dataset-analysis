@@ -175,41 +175,41 @@ function Utility() {
 		}
 	}
 
-	this.getTrendLineData = function(params) {
-		d3.select('div.trend-line-loader').style('display', 'block');
+	this.getBulletChartData = function(params) {
+		d3.select('div.bullet-loader').style('display', 'block');
 		$.ajax({
-			url: '/trend-line',
+			url: '/bullet-chart',
 			type: 'get',
 			data: params,
 			success: function(response) {
-				d3.select("div.trend-line svg").remove();
-				d3.select('div.trend-line p').remove();
+				d3.select("div.bullets svg").remove();
+				d3.select('div.bullets p').remove();
 				response = JSON.parse(response);
 				if (response.hasOwnProperty('error')) {
-					$('div.sunburst').append('<p class="error">' + response['error'] + '</p>');
+					$('div.bullets').append('<p class="error">' + response['error'] + '</p>');
 				} else {
-					drawTrendLine(response, params['checktype']);
-					d3.select('div.trend-line-loader').style('display', 'none');
+					drawBulletChart(response);
+					d3.select('div.bullet-loader').style('display', 'none');
 				}
 			}
 		})
 	}
 
-	this.getSunburstTrendLineData = function(params, axisName) {
-		d3.select('div.trend-line-loader').style('display', 'block');
+	this.getSunburstBulletChartData = function(params, axisName) {
+		d3.select('div.bullet-loader').style('display', 'block');
 		$.ajax({
-			url: '/sunburst-trend-line',
+			url: '/sunburst-bullet-chart',
 			type: 'get',
 			data: params,
 			success: function(response) {
-				d3.select("div.trend-line svg").remove();
-				d3.select('div.trend-line p').remove();
+				d3.select("div.bullets svg").remove();
+				d3.select('div.bullets p').remove();
 				response = JSON.parse(response);
 				if (response.hasOwnProperty('error')) {
-					$('div.sunburst').append('<p class="error">' + response['error'] + '</p>');
+					$('div.bullet-loader').append('<p class="error">' + response['error'] + '</p>');
 				} else {
-					drawTrendLine(response, params['checktype'], axisName);
-					d3.select('div.trend-line-loader').style('display', 'none');
+					drawBulletChart(response, axisName);
+					d3.select('div.bullet-loader').style('display', 'none');
 				}
 			}
 		})

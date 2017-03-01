@@ -43,10 +43,10 @@ class SunburstHandler(tornado.web.RequestHandler):
         return args
 
 
-class TrendLineHandler(tornado.web.RequestHandler):
+class BulletChartHandler(tornado.web.RequestHandler):
     def get(self):
         args = self.args_handler()
-        data = custom_handlers.get_trend_line_data(args)
+        data = custom_handlers.get_bullet_chart_data(args)
         if len(data) > 0:
             self.write(data.to_json(orient='records'))
         else:
@@ -66,10 +66,10 @@ class TrendLineHandler(tornado.web.RequestHandler):
         return args
 
 
-class SunburstTrendLineHandler(tornado.web.RequestHandler):
+class SunburstBulletChartHandler(tornado.web.RequestHandler):
     def get(self):
         args = self.args_handler()
-        data = custom_handlers.get_sunburst_trendline_data(args)
+        data = custom_handlers.get_sunburst_bulletchart_data(args)
         if len(data) > 0:
             self.write(data.to_json(orient='records'))
         else:
@@ -86,6 +86,25 @@ class SunburstTrendLineHandler(tornado.web.RequestHandler):
         args['country'] = self.get_argument('country', None)
         args['city'] = self.get_argument('city', None)
         args['check'] = self.get_argument('checktype', 'success')
+        return args
+
+
+class TreeMapHandler(tornado.web.RequestHandler):
+    def get(self):
+        args = self.args_handler()
+        data = custom_handlers.get_tree_map_data(args)
+        if len(data) > 0:
+            self.write(data.to_json(orient='records'))
+        else:
+            self.write(json.dumps({'error': 'No Data is Available'}))
+
+    def data_received(self, message):
+        pass
+
+    def args_handler(self):
+        args = dict()
+        args['year'] = self.get_argument('year', None)
+        args['col'] = self.get_argument('col', None)
         return args
 
 
@@ -114,8 +133,9 @@ if __name__ == '__main__':
 
     HANDLERS = [(r'/', IndexHandler),
                 (r'/sunburst', SunburstHandler),
-                (r'/trend-line', TrendLineHandler),
-                (r'/sunburst-trend-line', SunburstTrendLineHandler),
+                (r'/bullet-chart', BulletChartHandler),
+                (r'/sunburst-bullet-chart', SunburstBulletChartHandler),
+                (r'/bubble-chart', TreeMapHandler),
                 (r'/options', OptionHandler)]
 
     APP = tornado.web.Application(
