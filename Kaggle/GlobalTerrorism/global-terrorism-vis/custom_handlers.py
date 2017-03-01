@@ -11,9 +11,6 @@ except Exception as error:
 
 
 def get_sunburst_data(kwargs):
-    '''
-    Function to compute data by year
-    '''
     data = TERRORISM_DATA
     cols = ['iyear', 'month', 'region_txt', 'country_txt', 'city']
 
@@ -38,36 +35,7 @@ def get_sunburst_data(kwargs):
     return data.groupby(cols, as_index=False).sum().fillna('NA')
 
 
-def get_trend_line_data(kwargs):
-    '''
-    Function:
-    '''
-    data = TERRORISM_DATA
-    years = kwargs['year'].split('-')
-    st_year = int(years[0])
-    en_year = int(years[1])
-    cols = ['iyear', 'region_txt']
-    data = data[(data['iyear'] >= st_year) & (data['iyear'] <= en_year)]
-    data = data[data['region_txt'] == kwargs['region']]
-
-    if kwargs['country'] != 'all':
-        data = data[data['country_txt'] == kwargs['country']]
-        cols.append('country_txt')
-
-    if kwargs['city'] != 'all':
-        data = data[data['city'] == kwargs['city']]
-        cols.append('city')
-
-    if kwargs['check'] == 'suicide':
-        return data.groupby(cols, as_index=False).agg({'suicide': np.sum})
-
-    return data.groupby(cols, as_index=False).agg({'success': np.sum})
-
-
 def get_sunburst_bulletchart_data(kwargs):
-    '''
-    Function:
-    '''
     data = TERRORISM_DATA
     year = int(kwargs['year'])
     month = kwargs['month']
@@ -82,17 +50,20 @@ def get_sunburst_bulletchart_data(kwargs):
         data = data[data['region_txt'] == region]
         data = data[data['country_txt'] == country]
         key = 'city'
+
     elif year and month and region:
         data = data[data['iyear'] == year]
         data = data[data['month'] == month]
         data = data[data['region_txt'] == region]
         data = data[data['country_txt'] == country]
         key = 'country_txt'
+
     elif year and month:
         data = data[data['iyear'] == year]
         data = data[data['month'] == month]
         data = data[data['region_txt'] == region]
         key = 'region_txt'
+
     else:
         data = data[data['iyear'] == year]
         data = data[data['month'] == month]
@@ -129,16 +100,16 @@ def get_sunburst_bulletchart_data(kwargs):
 
 
 def get_options(col, region, country):
-    '''
-    Function:
-    '''
     if col == 'year':
         data = get_unique_years()
+
     elif col == 'region':
         data = get_unique_regions()
+
     elif col == 'country':
         region = region.replace('|', '&')
         data = get_unique_countries(region)
+
     else:
         region = region.replace('|', '&')
         data = get_unique_cities(region, country)
@@ -147,40 +118,25 @@ def get_options(col, region, country):
 
 
 def get_unique_years():
-    '''
-    Function:
-    '''
     return TERRORISM_DATA['year'].fillna('NA').unique().tolist()
 
 
 def get_unique_regions():
-    '''
-    Function:
-    '''
     return TERRORISM_DATA['region_txt'].fillna('NA').unique().tolist()
 
 
 def get_unique_countries(region):
-    '''
-    Function:
-    '''
     data = TERRORISM_DATA[TERRORISM_DATA['region_txt'] == region]
     return data['country_txt'].fillna('NA').unique().tolist()
 
 
 def get_unique_cities(region, country):
-    '''
-    Function:
-    '''
     data = TERRORISM_DATA[TERRORISM_DATA['region_txt'] == region]
     data = data[data['country_txt'] == country]
     return data['city'].fillna('NA').unique().tolist()
 
 
 def get_tree_map_data(kwargs):
-    '''
-    Function:
-    '''
     year = int(kwargs['year'])
     data = TERRORISM_DATA[TERRORISM_DATA['iyear'] == year]
     data = TERRORISM_DATA
@@ -191,9 +147,6 @@ def get_tree_map_data(kwargs):
 
 
 def get_bullet_chart_data(kwargs):
-    '''
-    Function:
-    '''
     data = TERRORISM_DATA
     years = kwargs['year'].split('-')
     st_year = int(years[0])

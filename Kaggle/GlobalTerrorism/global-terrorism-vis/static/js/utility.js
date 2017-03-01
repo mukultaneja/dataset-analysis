@@ -1,3 +1,4 @@
+
 "use strict";
 
 function Utility() {
@@ -165,14 +166,6 @@ function Utility() {
 				}
 			}
 		});
-	}
-
-	this.addBreadCumb = function(values) {
-		var index = 0;
-		$('div.breadcumb a').remove();
-		for (; index < 4; index++) {
-			$('div.breadcumb').append('<a href="#" class="breadcumb-links"> ' + values[index] + " ></a>");
-		}
 	}
 
 	this.getBulletChartData = function(params) {

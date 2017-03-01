@@ -1,4 +1,6 @@
 
+"use strict";
+
 function drawBulletChart(data, axisName='iyear') {
 	var height = 480,
 		width = 600;

@@ -25,6 +25,7 @@ class SunburstHandler(tornado.web.RequestHandler):
     def get(self):
         args = self.args_handler()
         data = custom_handlers.get_sunburst_data(args)
+
         if len(data) > 0:
             self.write(data.to_json(orient='records'))
         else:
@@ -47,6 +48,7 @@ class BulletChartHandler(tornado.web.RequestHandler):
     def get(self):
         args = self.args_handler()
         data = custom_handlers.get_bullet_chart_data(args)
+
         if len(data) > 0:
             self.write(data.to_json(orient='records'))
         else:
@@ -70,6 +72,7 @@ class SunburstBulletChartHandler(tornado.web.RequestHandler):
     def get(self):
         args = self.args_handler()
         data = custom_handlers.get_sunburst_bulletchart_data(args)
+
         if len(data) > 0:
             self.write(data.to_json(orient='records'))
         else:
@@ -93,6 +96,7 @@ class TreeMapHandler(tornado.web.RequestHandler):
     def get(self):
         args = self.args_handler()
         data = custom_handlers.get_tree_map_data(args)
+
         if len(data) > 0:
             self.write(data.to_json(orient='records'))
         else:
@@ -112,6 +116,7 @@ class OptionHandler(tornado.web.RequestHandler):
     def get(self):
         col, region, country = self.args_handler()
         data = custom_handlers.get_options(col, region, country)
+
         return self.write(data)
 
     def data_received(self, message):

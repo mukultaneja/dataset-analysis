@@ -1,14 +1,16 @@
 
+"use strict";
+
 function getColor(range) {
-  if (range < 200){
-  	return '#238443';
-  }else if (range > 200 && range < 500){
-  	return '#DDE689';
-  }else if (range > 500 && range < 800){
-  	return '#EC7014';
-  }else{
-  	return '#D73027';
-  }
+	if (range < 200) {
+		return '#238443';
+	} else if (range > 200 && range < 500) {
+		return '#DDE689';
+	} else if (range > 500 && range < 800) {
+		return '#EC7014';
+	} else {
+		return '#D73027';
+	}
 }
 
 function drawSunburst(root) {
@@ -117,31 +119,16 @@ function drawSunburst(root) {
 		var paramsKeys = new Array('year', 'month', 'region', 'country', 'city')
 		var rateValue = '';
 		var valueCount = 0;
-		while (node.parent != undefined){
+		while (node.parent != undefined) {
 			params[paramsKeys[node.depth - 1]] = node.name;
 			node = node.parent;
 		}
-
-		// recording suicide / success rate
-		var checktype = $('input[name="rate"]:checked').val();
-		params['checktype'] = checktype;
-
-
-		rateValue += params['year'] + '/' +
-					 params['month'] + '/' + 
-					 params['region'] + '/' +
-					 params['country'] + '/' +
-					 params['city'] + '/' +
-					 'sunburst' + '/' +
-					 paramsKeys[d.children[0].depth - 1];
-
-		$('input[name="rate"]').attr('attr', rateValue);
 
 		path.transition()
 			.duration(1000)
 			.attrTween("d", arcTweenZoom(d));
 
-		setTimeout(function(){
+		setTimeout(function() {
 			utility.getSunburstBulletChartData(params, paramsKeys[d.children[0].depth - 1]);
 		}, 1000);
 	}
